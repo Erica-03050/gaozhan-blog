@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-import path from 'path';
-import fs from 'fs/promises';
 
-const execAsync = promisify(exec);
+// Removed execAsync for Vercel compatibility
 
 interface SyncRequest {
   maxPages?: number;
@@ -43,7 +39,7 @@ interface SyncResponse {
 }
 
 /**
- * POST /api/sync - 启动微信公众号文章同步
+ * POST /api/sync - 启动微信公众号文章同步（Vercel兼容版本）
  */
 export async function POST(request: NextRequest): Promise<NextResponse<SyncResponse>> {
   try {
@@ -53,69 +49,13 @@ export async function POST(request: NextRequest): Promise<NextResponse<SyncRespo
     console.log('🚀 开始同步微信公众号文章...');
     console.log(`参数: maxPages=${maxPages}, getContent=${getContent}`);
 
-    // Python脚本路径
-    const scriptPath = path.join(process.cwd(), 'scripts', 'wechat_syncer.py');
-    
-    // 检查脚本是否存在
-    try {
-      await fs.access(scriptPath);
-    } catch (error) {
-      return NextResponse.json({
-        success: false,
-        message: '同步脚本不存在',
-        error: `Script not found: ${scriptPath}`
-      }, { status: 500 });
-    }
-
-    // 构建Python命令
-    const command = `python "${scriptPath}"`;
-    
-    console.log(`执行命令: ${command}`);
-
-    // 执行Python脚本
-    const { stdout, stderr } = await execAsync(command, {
-      cwd: process.cwd(),
-      timeout: 300000, // 5分钟超时
-      encoding: 'utf8'
-    });
-
-    if (stderr) {
-      console.warn('Python stderr:', stderr);
-    }
-
-    console.log('Python stdout:', stdout);
-
-    // 查找最新的结果文件
-    const resultsDir = process.cwd();
-    const files = await fs.readdir(resultsDir);
-    const resultFiles = files.filter(f => f.startsWith('sync_results_') && f.endsWith('.json'));
-    
-    if (resultFiles.length === 0) {
-      return NextResponse.json({
-        success: false,
-        message: '未找到同步结果文件',
-        error: 'No result file found'
-      }, { status: 500 });
-    }
-
-    // 获取最新的结果文件
-    const latestFile = resultFiles.sort().reverse()[0];
-    const resultPath = path.join(resultsDir, latestFile);
-    
-    // 读取同步结果
-    const resultContent = await fs.readFile(resultPath, 'utf8');
-    const syncResult = JSON.parse(resultContent);
-
-    console.log('✅ 同步完成，结果:', syncResult.sync_stats);
-
+    // 在Vercel环境中，我们不能执行Python脚本
+    // 这里返回一个模拟的成功响应，提醒用户需要集成数据库
     return NextResponse.json({
-      success: true,
-      message: '同步完成',
-      data: {
-        ...syncResult,
-        result_file: latestFile
-      }
-    });
+      success: false,
+      message: 'Vercel环境不支持Python脚本执行，请使用监控API或集成数据库',
+      error: 'Python execution not available in Vercel serverless environment'
+    }, { status: 501 });
 
   } catch (error) {
     console.error('❌ 同步失败:', error);
@@ -158,50 +98,19 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 }
 
 /**
- * 获取同步状态
+ * 获取同步状态（Vercel兼容版本）
  */
 async function getSyncStatus(): Promise<NextResponse> {
   try {
-    // 查找最近的同步结果文件
-    const resultsDir = process.cwd();
-    const files = await fs.readdir(resultsDir);
-    const resultFiles = files.filter(f => f.startsWith('sync_results_') && f.endsWith('.json'));
-    
-    if (resultFiles.length === 0) {
-      return NextResponse.json({
-        success: true,
-        message: '暂无同步记录',
-        data: {
-          lastSync: null,
-          totalArticles: 0,
-          totalAccounts: 7
-        }
-      });
-    }
-
-    // 获取最新的结果文件
-    const latestFile = resultFiles.sort().reverse()[0];
-    const resultPath = path.join(resultsDir, latestFile);
-    const resultContent = await fs.readFile(resultPath, 'utf8');
-    const syncResult = JSON.parse(resultContent);
-
-    // 从文件名提取时间
-    const timestamp = latestFile.replace('sync_results_', '').replace('.json', '');
-    const lastSyncTime = `${timestamp.slice(0,4)}-${timestamp.slice(4,6)}-${timestamp.slice(6,8)} ${timestamp.slice(9,11)}:${timestamp.slice(11,13)}:${timestamp.slice(13,15)}`;
-
+    // 在Vercel环境中，没有文件系统持久化
+    // 返回基本状态信息
     return NextResponse.json({
       success: true,
-      message: '获取状态成功',
+      message: '暂无同步记录',
       data: {
-        lastSync: lastSyncTime,
-        lastSyncFile: latestFile,
-        ...syncResult.sync_stats,
-        accounts: syncResult.account_results?.map((acc: AccountResult) => ({
-          name: acc.account_name,
-          articles: acc.articles?.length || 0,
-          errors: acc.errors || 0,
-          cost: acc.cost || 0
-        })) || []
+        lastSync: null,
+        totalArticles: 0,
+        totalAccounts: 7
       }
     });
 
@@ -211,45 +120,17 @@ async function getSyncStatus(): Promise<NextResponse> {
 }
 
 /**
- * 获取同步历史记录
+ * 获取同步历史记录（Vercel兼容版本）
  */
 async function getSyncHistory(): Promise<NextResponse> {
   try {
-    const resultsDir = process.cwd();
-    const files = await fs.readdir(resultsDir);
-    const resultFiles = files.filter(f => f.startsWith('sync_results_') && f.endsWith('.json'));
-    
-    const history = await Promise.all(
-      resultFiles.sort().reverse().slice(0, 10).map(async (file) => {
-        try {
-          const filePath = path.join(resultsDir, file);
-          const content = await fs.readFile(filePath, 'utf8');
-          const data = JSON.parse(content);
-          
-          const timestamp = file.replace('sync_results_', '').replace('.json', '');
-          const syncTime = `${timestamp.slice(0,4)}-${timestamp.slice(4,6)}-${timestamp.slice(6,8)} ${timestamp.slice(9,11)}:${timestamp.slice(11,13)}:${timestamp.slice(13,15)}`;
-          
-          return {
-            file,
-            syncTime,
-            ...data.sync_stats,
-            duration: data.duration || 0
-          };
-        } catch (error) {
-          console.warn(`解析文件 ${file} 失败:`, error);
-          return null;
-        }
-      })
-    );
-
-    const validHistory = history.filter(h => h !== null);
-
+    // 在Vercel环境中，没有持久化的历史记录
     return NextResponse.json({
       success: true,
       message: '获取历史记录成功',
       data: {
-        history: validHistory,
-        total: validHistory.length
+        history: [],
+        total: 0
       }
     });
 
@@ -259,44 +140,17 @@ async function getSyncHistory(): Promise<NextResponse> {
 }
 
 /**
- * 获取API余额
+ * 获取API余额（Vercel兼容版本）
  */
 async function getApiBalance(): Promise<NextResponse> {
   try {
-    // 执行余额查询脚本
-    const balanceScript = path.join(process.cwd(), 'scripts', 'check_balance.py');
-    
-    // 如果余额查询脚本不存在，创建一个简单的
-    try {
-      await fs.access(balanceScript);
-    } catch {
-      const balanceCode = `
-import sys
-sys.path.append('${path.join(process.cwd(), 'scripts')}')
-from wechat_syncer import WeChatBatchSyncer
-
-syncer = WeChatBatchSyncer("JZLebac614e9c88d8b4")
-balance = syncer.get_account_balance()
-print(f"BALANCE:{balance}")
-`;
-      await fs.writeFile(balanceScript, balanceCode);
-    }
-
-    const { stdout } = await execAsync(`python "${balanceScript}"`, {
-      timeout: 30000
-    });
-
-    const balanceMatch = stdout.match(/BALANCE:([\d.]+)/);
-    const balance = balanceMatch ? parseFloat(balanceMatch[1]) : 0;
-
+    // 在Vercel环境中，不能执行Python脚本
+    // 可以考虑通过HTTP API直接调用
     return NextResponse.json({
-      success: true,
-      message: '获取余额成功',
-      data: {
-        balance,
-        currency: '元'
-      }
-    });
+      success: false,
+      message: 'Vercel环境不支持Python脚本，请手动查询余额',
+      error: 'Balance check not available in Vercel environment'
+    }, { status: 501 });
 
   } catch (err) {
     return NextResponse.json({

@@ -11,7 +11,7 @@ const WECHAT_ACCOUNTS = {
   'shushu': { biz: 'MzkzODkzNTE2Mg==', name: '高瞻的术数人生' },
 };
 
-const API_KEY = process.env.JIZHILE_API_KEY || 'JZLebac614e9c88d8b4';
+const API_KEY = process.env.JIZHILE_API_KEY;
 const API_BASE_URL = 'https://www.dajiala.com';
 
 interface MonitorResponse {

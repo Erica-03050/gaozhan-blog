@@ -1,0 +1,14 @@
+# 极致了API配置
+JIZHILE_API_KEY=JZLebac614e9c88d8b4
+
+# Cron Job安全密钥（可选）
+CRON_SECRET=your_random_secret_key
+
+# 数据库配置（如果使用Supabase）
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# 通知配置（可选）
+NOTIFICATION_EMAIL=your_email@example.com
+WEBHOOK_URL=your_webhook_url

@@ -11,7 +11,7 @@ const WECHAT_ACCOUNTS = {
   'shushu': { biz: 'MzkzODkzNTE2Mg==', name: '高瞻的术数人生' },
 };
 
-const API_KEY = process.env.JIZHILE_API_KEY;
+const API_KEY = process.env.JIZHILE_API_KEY || 'JZLebac614e9c88d8b4';
 const API_BASE_URL = 'https://www.dajiala.com';
 
 interface MonitorResponse {
@@ -165,14 +165,6 @@ function saveMonitorResults(results: any) {
  */
 export async function POST(request: NextRequest) {
   try {
-    // 检查API密钥是否配置
-    if (!API_KEY) {
-      return NextResponse.json({
-        success: false,
-        message: 'API密钥未配置，请在Vercel环境变量中设置JIZHILE_API_KEY',
-      }, { status: 500 });
-    }
-    
     console.log('🚀 开始实时监控微信公众号...');
     
     const results = {

@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
 
 // 微信公众号配置
 const WECHAT_ACCOUNTS = {
@@ -146,21 +144,20 @@ function classifyArticle(title: string, digest: string): string {
 }
 
 /**
- * 保存监控结果到文件
+ * 保存监控结果（Vercel版本 - 只记录日志）
  */
 function saveMonitorResults(results: any) {
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-  const filename = `monitor_results_${timestamp}.json`;
-  const filepath = path.join(process.cwd(), 'monitor_data', filename);
+  // 在Vercel环境中，我们不能保存到文件系统
+  // 只记录到控制台日志，可以在Vercel函数日志中查看
+  console.log('📊 监控结果已记录:', {
+    timestamp: results.timestamp,
+    total_accounts: results.summary?.total_accounts,
+    total_articles: results.summary?.total_articles,
+    total_cost: results.summary?.total_cost
+  });
   
-  // 确保目录存在
-  const dir = path.dirname(filepath);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  
-  fs.writeFileSync(filepath, JSON.stringify(results, null, 2), 'utf8');
-  console.log(`监控结果已保存到: ${filepath}`);
+  // 这里可以集成数据库或外部存储服务
+  // 例如：Supabase, MongoDB, 或者发送到Webhook
 }
 
 /**
@@ -277,42 +274,17 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * GET /api/monitor - 获取最新监控结果
+ * GET /api/monitor - 获取最新监控结果（Vercel版本）
  */
 export async function GET() {
   try {
-    const monitorDir = path.join(process.cwd(), 'monitor_data');
-    
-    if (!fs.existsSync(monitorDir)) {
-      return NextResponse.json({
-        success: false,
-        message: '暂无监控数据',
-        data: null,
-      });
-    }
-    
-    // 获取最新的监控文件
-    const files = fs.readdirSync(monitorDir)
-      .filter(file => file.startsWith('monitor_results_') && file.endsWith('.json'))
-      .sort()
-      .reverse();
-    
-    if (files.length === 0) {
-      return NextResponse.json({
-        success: false,
-        message: '暂无监控数据',
-        data: null,
-      });
-    }
-    
-    const latestFile = path.join(monitorDir, files[0]);
-    const data = JSON.parse(fs.readFileSync(latestFile, 'utf8'));
-    
+    // 在Vercel环境中，我们不能读取文件系统
+    // 返回提示信息，建议使用POST方法执行新的监控
     return NextResponse.json({
-      success: true,
-      message: '获取监控数据成功',
-      data: data,
-      filename: files[0],
+      success: false,
+      message: '请使用POST方法执行新的监控，或查看Vercel函数日志获取历史数据',
+      data: null,
+      tip: '在Vercel环境中，历史数据需要集成数据库存储'
     });
     
   } catch (error) {

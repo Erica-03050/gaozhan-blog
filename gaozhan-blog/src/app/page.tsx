@@ -4,6 +4,7 @@ import ContactSection from '@/components/ContactSection';
 import CategoryCard from '@/components/CategoryCard';
 import ArticleCard from '@/components/ArticleCard';
 import { CATEGORIES } from '@/types';
+import { getHomeData } from '@/lib/dataService';
 import Link from 'next/link';
 
 // 模拟最新文章数据
@@ -86,6 +87,8 @@ const mockArticleCounts = {
 };
 
 export default function Home() {
+  // 获取真实的同步数据
+  const homeData = getHomeData();
   return (
     <>
       {/* 英雄横幅 */}
@@ -134,7 +137,7 @@ export default function Home() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {mockLatestArticles.map((article, index) => (
+            {homeData.latest_articles.slice(0, 6).map((article, index) => (
               <div key={article.id} className={`delay-${(index + 1) * 200}`}>
                 <ArticleCard article={article} />
               </div>

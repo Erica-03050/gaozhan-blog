@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import ArticleCard from '@/components/ArticleCard';
+import WeChatArticleContent from '@/components/WeChatArticleContent';
+import { getArticleById, getAllArticles } from '@/lib/dataService';
 
 // 模拟文章详情数据
 const mockArticleDetail = {
@@ -123,8 +125,8 @@ interface ArticlePageProps {
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { id } = await params;
   
-  // 这里应该根据ID从数据库获取文章，现在用模拟数据
-  const article = id === '1' ? mockArticleDetail : null;
+  // 获取真实的文章数据
+  const article = getArticleById(id);
   
   if (!article) {
     notFound();
@@ -222,9 +224,9 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             )}
 
             {/* 文章正文 */}
-            <div 
-              className="prose prose-lg max-w-none prose-headings:title-font prose-h2:text-2xl prose-h2:text-gray-800 prose-h2:border-b prose-h2:border-amber-200 prose-h2:pb-2 prose-h3:text-xl prose-h3:text-gray-700 prose-p:text-gray-700 prose-p:leading-relaxed prose-blockquote:border-l-4 prose-blockquote:border-amber-500 prose-blockquote:bg-amber-50 prose-blockquote:p-4 prose-blockquote:my-6 prose-strong:text-gray-800 prose-ol:text-gray-700 prose-ul:text-gray-700"
-              dangerouslySetInnerHTML={{ __html: article.content }}
+            <WeChatArticleContent 
+              content={article.content} 
+              title={article.title}
             />
 
             {/* 文章底部信息 */}
@@ -275,9 +277,12 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {mockRelatedArticles.map((relatedArticle) => (
-                <ArticleCard key={relatedArticle.id} article={relatedArticle} />
-              ))}
+              {getAllArticles()
+                .filter(a => a.category_id === article.category_id && a.id !== article.id)
+                .slice(0, 4)
+                .map((relatedArticle) => (
+                  <ArticleCard key={relatedArticle.id} article={relatedArticle} />
+                ))}
             </div>
 
             <div className="text-center mt-12">

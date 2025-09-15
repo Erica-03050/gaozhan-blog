@@ -69,14 +69,36 @@ export default function AdminPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchKeyword, setSearchKeyword] = useState('');
 
-  // 模拟同步功能
+  // 真实同步功能
   const handleSync = async () => {
     setIsSyncing(true);
-    // 模拟API调用
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/sync', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          maxPages: 2,
+          getContent: false
+        }),
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        alert(`同步成功！获取了${result.data.sync_stats.total_articles}篇文章，费用${result.data.sync_stats.total_cost.toFixed(2)}元`);
+        // 可以在这里刷新页面数据
+        window.location.reload();
+      } else {
+        alert(`同步失败：${result.message}`);
+      }
+    } catch (error) {
+      alert('同步过程中发生错误');
+      console.error('同步失败:', error);
+    } finally {
       setIsSyncing(false);
-      alert('同步完成！新增2篇文章');
-    }, 3000);
+    }
   };
 
   // 筛选文章

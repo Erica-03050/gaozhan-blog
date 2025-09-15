@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import ArticleCard from '@/components/ArticleCard';
 import { CATEGORIES } from '@/types';
+import { getArticlesByCategory, getAccountDescription } from '@/lib/dataService';
 
 // 模拟文章数据
 const mockArticles = [
@@ -64,10 +65,9 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     notFound();
   }
 
-  // 筛选对应分类的文章 (这里用模拟数据，实际应该从数据库获取)
-  const categoryArticles = mockArticles.filter(article => 
-    article.category_id === categoryInfo.id
-  );
+  // 获取真实的分类文章
+  const categoryArticles = getArticlesByCategory(categoryInfo.id);
+  const accountDesc = getAccountDescription(categoryInfo.id);
 
   // 分页处理
   const articlesPerPage = 12;
@@ -100,8 +100,21 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
               {categoryInfo.name}
             </h1>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              {categoryInfo.description}
+              {accountDesc || categoryInfo.description}
             </p>
+            
+            {/* 如果有公众号描述，显示额外信息 */}
+            {accountDesc && (
+              <div className="mt-6 max-w-3xl mx-auto">
+                <div className="bg-amber-100 bg-opacity-20 backdrop-blur-sm rounded-lg p-4 border border-amber-300 border-opacity-30">
+                  <div className="flex items-center justify-center">
+                    <i className="fas fa-quote-left text-amber-300 mr-3"></i>
+                    <span className="text-amber-100 font-medium">来自微信公众号的官方介绍</span>
+                    <i className="fas fa-quote-right text-amber-300 ml-3"></i>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="mt-6 text-sm text-gray-400">
               共 {categoryArticles.length} 篇武林秘籍
             </div>

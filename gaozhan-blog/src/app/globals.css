@@ -235,3 +235,308 @@ body {
   transform: translateY(-5px);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
 }
+
+/* 微信文章内容样式 */
+.wechat-article-content {
+  line-height: 1.8;
+  color: #333;
+  font-size: 16px;
+}
+
+.wechat-article-content h1,
+.wechat-article-content h2,
+.wechat-article-content h3,
+.wechat-article-content h4,
+.wechat-article-content h5,
+.wechat-article-content h6 {
+  font-family: 'Ma Shan Zheng', cursive;
+  color: #2d3748;
+  margin: 24px 0 16px 0;
+  line-height: 1.4;
+}
+
+.wechat-article-content h1 {
+  font-size: 28px;
+  border-bottom: 3px solid #d69e2e;
+  padding-bottom: 8px;
+}
+
+.wechat-article-content h2 {
+  font-size: 24px;
+  border-bottom: 2px solid #d69e2e;
+  padding-bottom: 6px;
+}
+
+.wechat-article-content h3 {
+  font-size: 20px;
+  color: #744210;
+}
+
+.wechat-article-content p {
+  margin: 16px 0;
+  text-align: justify;
+  text-indent: 2em;
+}
+
+.wechat-article-content img {
+  max-width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin: 20px auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.wechat-article-content img:hover {
+  transform: scale(1.02);
+}
+
+.wechat-article-content img[src=""],
+.wechat-article-content img[src*="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP"],
+.wechat-article-content img[style*="display: none"] {
+  display: none !important;
+}
+
+.wechat-article-content blockquote {
+  background: linear-gradient(135deg, #fef7e0 0%, #f6e05e 100%);
+  border-left: 4px solid #d69e2e;
+  padding: 16px 20px;
+  margin: 20px 0;
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+  position: relative;
+}
+
+.wechat-article-content blockquote::before {
+  content: '"';
+  font-size: 60px;
+  color: #d69e2e;
+  position: absolute;
+  top: -10px;
+  left: 15px;
+  font-family: serif;
+}
+
+.wechat-article-content ul,
+.wechat-article-content ol {
+  margin: 16px 0;
+  padding-left: 30px;
+}
+
+.wechat-article-content li {
+  margin: 8px 0;
+  line-height: 1.6;
+}
+
+.wechat-article-content strong,
+.wechat-article-content b {
+  color: #744210;
+  font-weight: 700;
+}
+
+.wechat-article-content em,
+.wechat-article-content i {
+  color: #9c4221;
+  font-style: italic;
+}
+
+.wechat-article-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.wechat-article-content th,
+.wechat-article-content td {
+  border: 1px solid #e2e8f0;
+  padding: 12px 16px;
+  text-align: left;
+}
+
+.wechat-article-content th {
+  background: linear-gradient(135deg, #d69e2e 0%, #b7791f 100%);
+  color: white;
+  font-weight: 600;
+}
+
+.wechat-article-content tr:nth-child(even) {
+  background-color: #f7fafc;
+}
+
+.wechat-article-content code {
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  color: #744210;
+  font-size: 14px;
+}
+
+.wechat-article-content pre {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  margin: 20px 0;
+}
+
+.wechat-article-content pre code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+.wechat-article-content a {
+  color: #d69e2e;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.wechat-article-content a:hover {
+  color: #b7791f;
+}
+
+/* 处理微信文章中的特殊元素 */
+.wechat-article-content [data-role="mp-editor"] {
+  margin: 16px 0;
+}
+
+.wechat-article-content .rich_media_content {
+  line-height: 1.8;
+}
+
+/* 内容受限提示样式 */
+.wechat-article-content .content-notice {
+  background: linear-gradient(135deg, #fef7e0 0%, #f6e05e 100%);
+  border: 2px solid #d69e2e;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 24px 0;
+  text-align: center;
+  color: #744210;
+}
+
+.wechat-article-content .content-notice h3 {
+  color: #8b5a00;
+  margin: 0 0 16px 0;
+  font-size: 18px;
+}
+
+.wechat-article-content .content-notice p {
+  margin: 12px 0;
+  text-indent: 0;
+}
+
+.wechat-article-content .content-notice blockquote {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid #d69e2e;
+  border-radius: 6px;
+  padding: 12px;
+  margin: 16px 0;
+  font-style: normal;
+  color: #8b5a00;
+}
+
+/* 加载动画 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.wechat-article-content img {
+  animation: fadeIn 0.3s ease-in;
+}
+
+/* 内容清理样式 */
+.wechat-article-content section {
+  margin: 16px 0;
+}
+
+.wechat-article-content section img {
+  display: block !important;
+}
+
+/* 处理微信特殊标签 */
+.wechat-article-content [style*="display: inline-block"] img {
+  display: inline-block !important;
+  vertical-align: middle;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .wechat-article-content {
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  
+  .wechat-article-content h1 {
+    font-size: 24px;
+  }
+  
+  .wechat-article-content h2 {
+    font-size: 20px;
+  }
+  
+  .wechat-article-content h3 {
+    font-size: 18px;
+  }
+  
+  .wechat-article-content p {
+    text-indent: 1.5em;
+  }
+  
+  .wechat-article-content img {
+    margin: 16px auto;
+  }
+  
+  .wechat-article-content .image-placeholder {
+    margin: 16px auto;
+  }
+}
+
+/* 确保所有图片正常显示 */
+.wechat-article-content img {
+  display: block !important;
+  max-width: 100%;
+  height: auto;
+  visibility: visible !important;
+}
+
+/* 直接隐藏所有mb-8容器 - 按照用户要求 */
+.wechat-article-content .mb-8 {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+}
+
+/* 更强力的选择器 */
+.wechat-article-content div[class*="mb-8"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* 全局隐藏 */
+.mb-8 {
+  display: none !important;
+}
+
+/* 直接隐藏占位符图片本身 */
+.wechat-article-content img[width="140"][height="140"],
+.wechat-article-content img[width="150"][height="150"],
+.wechat-article-content img[width="132"][height="132"] {
+  display: none !important;
+}
+
+/* 通过alt属性隐藏 */
+.wechat-article-content img[alt*="此图片来自微信公众号"] {
+  display: none !important;
+}

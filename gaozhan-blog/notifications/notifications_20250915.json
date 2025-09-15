@@ -1,0 +1,20 @@
+[
+  {
+    "timestamp": "2025-09-15T17:22:50.941746",
+    "articles_count": 2,
+    "articles": [
+      {
+        "account": "高瞻的論正人生",
+        "title": "伦敦的呐喊，马斯克的回声",
+        "category": "wisdom",
+        "url": "https://mp.weixin.qq.com/s/tWg850z3M3GdaoiRFJ4vAg"
+      },
+      {
+        "account": "高瞻的智慧人生",
+        "title": "黑海上空的阴影：罗马尼亚的抗议与欧洲安全的裂痕",
+        "category": "wisdom",
+        "url": "https://mp.weixin.qq.com/s/gbXsKqGcIXp7V3uy6GBbaA"
+      }
+    ]
+  }
+]

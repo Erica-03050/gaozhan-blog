@@ -12,8 +12,5 @@
     "src/app/api/monitor/route.ts": {
       "maxDuration": 300
     }
-  },
-  "env": {
-    "JIZHILE_API_KEY": "@jizhile_api_key"
   }
 }

@@ -146,7 +146,14 @@ function classifyArticle(title: string, digest: string): string {
 /**
  * 保存监控结果（Vercel版本 - 只记录日志）
  */
-function saveMonitorResults(results: any) {
+function saveMonitorResults(results: {
+  timestamp: string;
+  summary?: {
+    total_accounts: number;
+    total_articles: number;
+    total_cost: number;
+  };
+}) {
   // 在Vercel环境中，我们不能保存到文件系统
   // 只记录到控制台日志，可以在Vercel函数日志中查看
   console.log('📊 监控结果已记录:', {
@@ -169,7 +176,13 @@ export async function POST(request: NextRequest) {
     
     const results = {
       timestamp: new Date().toISOString(),
-      accounts: [] as any[],
+      accounts: [] as Array<{
+        category_id: string;
+        account_name: string;
+        success: boolean;
+        articles: Array<any>;
+        cost: number;
+      }>,
       summary: {
         total_accounts: 0,
         total_articles: 0,

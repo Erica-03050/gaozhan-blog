@@ -135,7 +135,16 @@ function classifyArticle(title: string, digest: string): string {
 /**
  * 保存到数据库或外部存储（这里简化处理）
  */
-async function saveArticles(articles: any[]) {
+async function saveArticles(articles: Array<{
+  id: string;
+  title: string;
+  url: string;
+  cover_image: string;
+  digest: string;
+  post_time: string;
+  category_id: string;
+  original_category: string;
+}>) {
   // 在真实部署中，这里应该保存到数据库
   // 现在我们只是记录日志
   console.log(`保存 ${articles.length} 篇文章到数据库`);
@@ -149,7 +158,12 @@ async function saveArticles(articles: any[]) {
 /**
  * 发送通知（可选）
  */
-async function sendNotification(summary: any) {
+async function sendNotification(summary: {
+  total_accounts: number;
+  total_articles: number;
+  total_cost: number;
+  new_articles: number;
+}) {
   // 这里可以集成邮件通知、Webhook等
   console.log('监控完成通知:', summary);
   
@@ -179,7 +193,13 @@ export async function GET(request: NextRequest) {
     
     const results = {
       timestamp: new Date().toISOString(),
-      accounts: [] as any[],
+      accounts: [] as Array<{
+        category_id: string;
+        account_name: string;
+        success: boolean;
+        articles: Array<any>;
+        cost: number;
+      }>,
       summary: {
         total_accounts: 0,
         total_articles: 0,

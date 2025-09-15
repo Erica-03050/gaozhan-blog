@@ -7,7 +7,7 @@ interface WeChatArticleContentProps {
   title: string;
 }
 
-export default function WeChatArticleContent({ content, title }: WeChatArticleContentProps) {
+export default function WeChatArticleContent({ content }: WeChatArticleContentProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const [processedContent, setProcessedContent] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(true);
@@ -117,7 +117,7 @@ export default function WeChatArticleContent({ content, title }: WeChatArticleCo
     if (contentRef.current && processedContent) {
       // 处理图片加载错误和样式
       const images = contentRef.current.querySelectorAll('img');
-      images.forEach((img, index) => {
+      images.forEach((img) => {
         // 设置图片样式
         img.style.maxWidth = '100%';
         img.style.height = 'auto';
@@ -362,7 +362,7 @@ export default function WeChatArticleContent({ content, title }: WeChatArticleCo
               <p className="text-amber-700">
                 由于原文访问限制或内容获取问题，暂时无法显示完整内容。
                 <br />
-                您可以点击下方的"原文链接"查看完整文章。
+                您可以点击下方的&ldquo;原文链接&rdquo;查看完整文章。
               </p>
             </div>
           </div>

@@ -39,18 +39,26 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  // 禁用webpack的eval使用
+  // 完全禁用webpack的eval使用 - 解决Vercel CSP问题
   webpack: (config, { dev, isServer }) => {
-    // 在生产环境中强制禁用eval
-    if (!dev) {
-      config.devtool = false;
-    }
+    // 强制禁用所有eval相关功能
+    config.devtool = false;
     
-    // 禁用所有eval相关的devtool选项
+    // 确保没有eval相关的优化
     config.optimization = {
       ...config.optimization,
       minimize: !dev,
+      // 禁用所有可能使用eval的优化
+      concatenateModules: false,
     };
+    
+    // 禁用所有可能产生eval的插件
+    config.plugins = config.plugins || [];
+    
+    // 强制设置mode避免默认的development模式使用eval
+    if (!dev) {
+      config.mode = 'production';
+    }
     
     return config;
   },

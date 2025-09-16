@@ -210,6 +210,22 @@ function generateDemoContent(title: string, categoryId: string): string {
 }
 
 /**
+ * 分类ID映射表 - 将数据文件中的category_id映射到网站的分类ID
+ */
+const CATEGORY_ID_MAPPING: Record<string, string> = {
+  'politics': 'debate',      // 論正人生
+  'literary': 'literary',    // 文艺人生  
+  'wisdom': 'wisdom',        // 智慧人生
+  'trading': 'trading',      // 交易人生
+  'consulting': 'consulting', // 咨询人生
+  'tax': 'tax',             // 税筹人生
+  'music': 'music',         // 音乐人生
+  'math': 'math',           // 数术人生
+  'numerology': 'math',     // 数术人生(备用映射)
+  'shushu': 'math'          // 数术人生(备用映射)
+};
+
+/**
  * 将同步的文章数据转换为网站使用的格式
  */
 function convertSyncedArticleToArticle(syncedArticle: SyncedArticle, accountName: string, articleIndex: number, globalIndex: number): Article {
@@ -250,12 +266,15 @@ function convertSyncedArticleToArticle(syncedArticle: SyncedArticle, accountName
   const textContent = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
   const excerpt = syncedArticle.excerpt || (textContent.substring(0, 200) + '...');
   
+  // 映射分类ID
+  const mappedCategoryId = CATEGORY_ID_MAPPING[syncedArticle.category_id] || syncedArticle.category_id;
+  
   return {
     id: finalId,
     title: syncedArticle.title || '无标题',
     content: content,
     summary: excerpt,
-    category_id: syncedArticle.category_id,
+    category_id: mappedCategoryId,
     cover_image: syncedArticle.cover_image_url || '',
     publish_time: syncedArticle.post_time_str || new Date().toISOString().split('T')[0],
     original_link: syncedArticle.original_url,

@@ -12,5 +12,5 @@
     "src/app/api/monitor/route.ts": {
       "maxDuration": 300
     }
-  },
+  }
 }

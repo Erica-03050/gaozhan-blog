@@ -70,16 +70,46 @@ interface AccountInfo {
 function getLatestSyncFile(): string | null {
   try {
     const projectRoot = process.cwd();
-    const files = fs.readdirSync(projectRoot);
-    const syncFiles = files.filter(f => f.startsWith('sync_results_') && f.endsWith('.json'));
     
-    if (syncFiles.length === 0) {
-      return null;
+    // Vercel环境下，尝试直接访问已知的数据文件
+    const knownFiles = [
+      'sync_results_20250915_140611_with_content_with_content_20250915_150117.json',
+      'sync_results_20250915_140611_with_content_backup.json',
+      'sync_results_20250915_140611_with_content.json',
+      'sync_results_20250915_140611.json'
+    ];
+    
+    // 首先尝试访问已知文件
+    for (const fileName of knownFiles) {
+      const filePath = path.join(projectRoot, fileName);
+      try {
+        if (fs.existsSync(filePath)) {
+          console.log(`Found sync file: ${fileName}`);
+          return filePath;
+        }
+      } catch (e) {
+        continue;
+      }
     }
     
-    // 按文件名排序，获取最新的
-    const latestFile = syncFiles.sort().reverse()[0];
-    return path.join(projectRoot, latestFile);
+    // 如果已知文件都不存在，尝试读取目录（可能在本地环境）
+    try {
+      const files = fs.readdirSync(projectRoot);
+      const syncFiles = files.filter(f => f.startsWith('sync_results_') && f.endsWith('.json'));
+      
+      if (syncFiles.length === 0) {
+        console.log('No sync files found in directory');
+        return null;
+      }
+      
+      // 按文件名排序，获取最新的
+      const latestFile = syncFiles.sort().reverse()[0];
+      console.log(`Found latest sync file: ${latestFile}`);
+      return path.join(projectRoot, latestFile);
+    } catch (dirError) {
+      console.log('Cannot read directory, trying fallback files');
+      return null;
+    }
   } catch (error) {
     console.error('Error reading sync files:', error);
     return null;
@@ -92,16 +122,43 @@ function getLatestSyncFile(): string | null {
 function getAccountInfoFile(): string | null {
   try {
     const projectRoot = process.cwd();
-    const files = fs.readdirSync(projectRoot);
-    const accountFiles = files.filter(f => f.startsWith('account_info_') && f.endsWith('.json'));
     
-    if (accountFiles.length === 0) {
-      return null;
+    // Vercel环境下，尝试直接访问已知的账户信息文件
+    const knownFiles = [
+      'account_info_20250915_151039.json'
+    ];
+    
+    // 首先尝试访问已知文件
+    for (const fileName of knownFiles) {
+      const filePath = path.join(projectRoot, fileName);
+      try {
+        if (fs.existsSync(filePath)) {
+          console.log(`Found account info file: ${fileName}`);
+          return filePath;
+        }
+      } catch (e) {
+        continue;
+      }
     }
     
-    // 按文件名排序，获取最新的
-    const latestFile = accountFiles.sort().reverse()[0];
-    return path.join(projectRoot, latestFile);
+    // 如果已知文件都不存在，尝试读取目录（可能在本地环境）
+    try {
+      const files = fs.readdirSync(projectRoot);
+      const accountFiles = files.filter(f => f.startsWith('account_info_') && f.endsWith('.json'));
+      
+      if (accountFiles.length === 0) {
+        console.log('No account info files found in directory');
+        return null;
+      }
+      
+      // 按文件名排序，获取最新的
+      const latestFile = accountFiles.sort().reverse()[0];
+      console.log(`Found latest account info file: ${latestFile}`);
+      return path.join(projectRoot, latestFile);
+    } catch (dirError) {
+      console.log('Cannot read directory for account info, trying fallback files');
+      return null;
+    }
   } catch (error) {
     console.error('Error reading account info files:', error);
     return null;
@@ -331,16 +388,28 @@ function isHighQualityArticle(syncedArticle: SyncedArticle): boolean {
  * 获取所有文章
  */
 export function getAllArticles(): Article[] {
+  console.log('🔍 getAllArticles called');
+  
   // 检查缓存
   const now = Date.now();
   if (cachedArticles && (now - cacheTimestamp) < CACHE_DURATION) {
+    console.log(`📦 Using cached articles: ${cachedArticles.length} articles`);
     return cachedArticles;
   }
   
   const syncData = getSyncData();
+  console.log('📊 Sync data loaded:', syncData ? 'SUCCESS' : 'FAILED');
+  
   if (!syncData) {
+    console.log('❌ No sync data available, returning empty array');
     return []; // 如果没有同步数据，返回空数组
   }
+  
+  console.log(`📈 Sync data stats:`, {
+    total_accounts: syncData.sync_stats?.total_accounts,
+    total_articles: syncData.sync_stats?.total_articles,
+    account_results_count: syncData.account_results?.length
+  });
   
   const allArticles: Article[] = [];
   const seenIds = new Set<string>(); // 用于去重
@@ -348,6 +417,13 @@ export function getAllArticles(): Article[] {
   
   // 遍历所有账户的文章
   syncData.account_results.forEach((account, accountIndex) => {
+    console.log(`🏢 Processing account ${accountIndex + 1}: ${account.account_name} (${account.articles?.length || 0} articles)`);
+    
+    if (!account.articles || account.articles.length === 0) {
+      console.log(`⚠️ Account ${account.account_name} has no articles`);
+      return;
+    }
+    
     account.articles.forEach((syncedArticle, articleIndex) => {
       // 检查是否有实际内容
       const hasContent = syncedArticle.content_html || syncedArticle.content;
@@ -393,6 +469,15 @@ export function getAllArticles(): Article[] {
   const sortedArticles = allArticles.sort((a, b) => 
     new Date(b.publish_time).getTime() - new Date(a.publish_time).getTime()
   );
+  
+  console.log(`✅ Final result: ${sortedArticles.length} articles processed`);
+  if (sortedArticles.length > 0) {
+    console.log(`📝 Sample articles:`, sortedArticles.slice(0, 3).map(a => ({
+      title: a.title,
+      category: a.category_id,
+      publish_time: a.publish_time
+    })));
+  }
   
   // 更新缓存
   cachedArticles = sortedArticles;

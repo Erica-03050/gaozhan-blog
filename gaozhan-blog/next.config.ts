@@ -9,9 +9,27 @@ const nextConfig: NextConfig = {
     // 在生产构建时忽略TypeScript错误
     ignoreBuildErrors: true,
   },
-  // 完全禁用所有安全头以解决JavaScript执行问题
+  // 强制移除所有CSP相关头部
   async headers() {
-    return [];
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: '',
+          },
+          {
+            key: 'X-Content-Security-Policy', 
+            value: '',
+          },
+          {
+            key: 'X-WebKit-CSP',
+            value: '',
+          },
+        ],
+      },
+    ];
   },
 };
 

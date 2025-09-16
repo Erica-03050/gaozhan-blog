@@ -9,31 +9,37 @@ const nextConfig: NextConfig = {
     // 在生产构建时忽略TypeScript错误
     ignoreBuildErrors: true,
   },
-  // 强制禁用所有安全策略
+  // 完全移除所有安全头部 - 绕过Vercel默认CSP
   async headers() {
     return [
       {
         source: '/(.*)',
         headers: [
+          // 完全禁用CSP - 使用空值覆盖Vercel默认设置
           {
             key: 'Content-Security-Policy',
-            value: "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; script-src * 'unsafe-inline' 'unsafe-eval' data: blob:; style-src * 'unsafe-inline' data:; img-src * data: blob: 'unsafe-inline'; font-src * data:; connect-src * data: blob:; media-src * data: blob:; object-src * data: blob:; child-src * data: blob:; frame-src * data: blob:; worker-src * data: blob: 'unsafe-inline' 'unsafe-eval'; form-action * data:; base-uri * data:; manifest-src * data:;"
+            value: ''
           },
           {
-            key: 'X-Content-Security-Policy',
+            key: 'X-Content-Security-Policy', 
             value: ''
           },
           {
             key: 'X-WebKit-CSP',
             value: ''
           },
+          // 移除其他可能干扰的安全头
+          {
+            key: 'X-XSS-Protection',
+            value: ''
+          },
           {
             key: 'X-Frame-Options',
-            value: 'SAMEORIGIN'
+            value: ''
           },
           {
             key: 'X-Content-Type-Options',
-            value: 'nosniff'
+            value: ''
           }
         ],
       },

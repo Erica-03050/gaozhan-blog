@@ -16,10 +16,13 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <head>
-        {/* Completely disable all CSP */}
-        <meta httpEquiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'; img-src * data: blob:; font-src * data:; connect-src *; media-src *; object-src *; child-src *; frame-src *; worker-src * blob:; form-action *;" />
+        {/* Disable all security policies */}
+        <meta httpEquiv="Content-Security-Policy" content="" />
         <meta httpEquiv="X-Content-Security-Policy" content="" />
         <meta httpEquiv="X-WebKit-CSP" content="" />
+        <meta httpEquiv="X-XSS-Protection" content="" />
+        <meta httpEquiv="X-Frame-Options" content="" />
+        <meta httpEquiv="X-Content-Type-Options" content="" />
         
         {/* Clear browser cache */}
         <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />

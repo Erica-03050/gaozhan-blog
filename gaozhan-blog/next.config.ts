@@ -24,28 +24,6 @@ const nextConfig: NextConfig = {
     
     return config;
   },
-  // 强制移除所有CSP相关头部
-  async headers() {
-    return [
-      {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: '',
-          },
-          {
-            key: 'X-Content-Security-Policy', 
-            value: '',
-          },
-          {
-            key: 'X-WebKit-CSP',
-            value: '',
-          },
-        ],
-      },
-    ];
-  },
 };
 
 export default nextConfig;

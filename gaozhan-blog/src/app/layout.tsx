@@ -16,6 +16,39 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <head>
+        {/* Runtime CSP bypass script */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Bypass CSP at runtime
+              if (typeof window !== 'undefined') {
+                // Remove CSP meta tags
+                const cspMetas = document.querySelectorAll('meta[http-equiv*="Content-Security-Policy"], meta[http-equiv*="CSP"]');
+                cspMetas.forEach(meta => meta.remove());
+                
+                // Override eval function to bypass CSP
+                window.originalEval = window.eval;
+                
+                // Monkey patch document.createElement to remove CSP
+                const originalCreateElement = document.createElement;
+                document.createElement = function(tagName) {
+                  const element = originalCreateElement.call(this, tagName);
+                  if (tagName.toLowerCase() === 'meta') {
+                    const originalSetAttribute = element.setAttribute;
+                    element.setAttribute = function(name, value) {
+                      if (name.toLowerCase().includes('content-security-policy') || name.toLowerCase().includes('csp')) {
+                        return; // Block CSP meta tags
+                      }
+                      return originalSetAttribute.call(this, name, value);
+                    };
+                  }
+                  return element;
+                };
+              }
+            `
+          }}
+        />
+        
         {/* Disable all security policies */}
         <meta httpEquiv="Content-Security-Policy" content="" />
         <meta httpEquiv="X-Content-Security-Policy" content="" />
